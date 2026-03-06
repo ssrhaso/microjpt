@@ -21,7 +21,7 @@ println("vocab size: $vocab_size")                                          # An
 encode(s) = [findfirst(==(c), chars) for c in s]                            # The Tokenizer: mapping human language to integers
 
 # SCENE 2 : The Initialization of Parameters
-const n_layer, n_embd, block_size, n_head = 4, 64, 16, 8                    # Hyperparameters: depth, width, context size, attention heads
+const n_embd, block_size, n_head = 64, 16, 8                    # Hyperparameters: width, context size, attention heads
 const hd = n_embd ÷ n_head; init(r, c) = 0.08randn(r, c)                    # Derived dimension per head, and Gaussian WEIGHT initialization, σ = 0.08
 const W = Dict{String,Matrix{Float64}}(                                     # Allocate the global dictionary of weight matrices
     "wte"=>init(n_embd,vocab_size), "wpe"=>init(n_embd,block_size),         # Token and Positional embeddings (64x28 and 64x16)
