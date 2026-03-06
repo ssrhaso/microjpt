@@ -1,7 +1,7 @@
 """ 
 microgpt: A first-principles GPT in ~100 lines of pure Julia.
 A complete neural architecture distilled to its absolute minimum:
-encoder -> cross-attention state -> decoder.
+causal self-attention -> MLP -> next-token prediction.
 
 Authored by @ssrhaso. Inspired by MicroGPT by @karpathy. 
 """
@@ -27,8 +27,8 @@ const W = Dict{String,Matrix{Float64}}(                                     # Al
     "wte"=>init(n_embd,vocab_size), "wpe"=>init(n_embd,block_size),         # Token and Positional embeddings (64x28 and 64x16)
     "lm_head"=>init(vocab_size,n_embd), "attn_wq"=>init(n_embd,n_embd),     # Final linear projection and Attention Queries (28x64 and 64x64)
     "attn_wk"=>init(n_embd,n_embd), "attn_wv"=>init(n_embd,n_embd),         # Attention Keys and Values (64x64 and 64x64)
-    "attn_wo"=>init(n_embd,n_embd), "mlp_fc1"=>init(4n_embd,n_embd),        # Attention Output projection and 1st MLP layer (64x64 and 256x64)
-    "mlp_fc2"=>init(n_embd,4n_embd))                                        # 2nd MLP layer (64x256)
+    "attn_wo"=>init(n_embd,n_embd), "mlp_fc1"=>init(4n_embd,n_embd),        # Attention Output projection and MLP expansion (64x64 and 256x64)
+    "mlp_fc2"=>init(n_embd,4n_embd))                                        # MLP compression (64x256)
 println("num params: $(sum(length, values(W)))")                            # Announce the total mathematical complexity
 
 # ACT II : The Forward Pass 
