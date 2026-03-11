@@ -11,15 +11,6 @@ A pure Julia port of Karpathy's [microgpt](https://gist.github.com/karpathy/8627
 
 Both files contain the complete algorithm: tokenizer, RMSNorm, multi-head causal attention, ReLU MLP, manual matrix backpropagation, Adam optimizer, and temperature-controlled inference.
 
-### Running
-
-Requires Julia 1.9+. No packages to install -  `Random` and `Downloads` are part of the standard library. On first run the dataset is downloaded automatically, if you choose you can replace this dataset with any other to test the application further. Open a Julia REPL and run:
-
-```julia
-include("microjpt.jl")    # annotated
-include("nanojpt.jl")    # compact
-```
-
 ### Benchmarks
 
 Independent benchmarks by [@Entrpi](https://github.com/Entrpi) on an Apple M5 (single P-core), using the Karpathy names dataset with `n_head=4`.
@@ -46,6 +37,60 @@ Independent benchmarks by [@Entrpi](https://github.com/Entrpi) on an Apple M5 (s
 microjpt is the fastest batch=1 implementation with **3.8× faster than rust-microgpt at d16** and **5.5× faster at d64**. The explicit backprop collapses ~57K autograd tape nodes into ~20 matrix operations, the same insight driving EEmicroGPT's performance. The remaining gap to EEmicroGPT comes from batching (16 samples), f32 vs f64, and hand-optimized Neon/SME2 SIMD.
 
 > 100 lines of dependency-free Julia, 1,581× faster than CPython, and only 7.6× off hand-tuned C.
+
+### Setup & Installation
+
+**Install Julia**
+
+The recommended way is [juliaup](https://github.com/JuliaLang/juliaup), the official version manager:
+
+```bash
+# macOS / Linux
+curl -fsSL https://install.julialang.org | sh
+
+# Windows (PowerShell)
+winget install julia -s msstore
+```
+
+Or download directly from [julialang.org](https://julialang.org/downloads/).
+
+**Verify**
+
+```bash
+julia --version   # should print Julia 1.9 or later
+```
+
+**Run**
+
+From a terminal:
+
+```bash
+julia microjpt.jl
+```
+
+Or from the Julia REPL:
+
+```julia
+include("microjpt.jl")
+```
+
+There are zero external packages to install. `Random` and `Downloads` are part of Julia's standard library and require no `Pkg.add`. The training dataset downloads automatically on first run.
+
+---
+
+### Why Julia?
+
+**Math-literal syntax.** Julia has native Unicode identifier support, so variables are written as `β1`, `β2`, `ε`, `∑` - the code maps directly to the paper's notation without translation.
+
+**JIT via LLVM.** Julia compiles to native machine code through LLVM. The first run is slow due to method compilation; subsequent runs execute at full speed. If the initial startup feels sluggish, that's precompilation and not the algorithm.
+
+**BLAS with zero configuration.** The `*` operator on matrices dispatches to OpenBLAS (bundled with Julia) automatically. No `numpy`, no linking, no flags.
+
+**No Python overhead.** No GIL, no interpreter loop, no framework abstraction layers. This is the direct reason batch=1 reaches 1,581× over CPython.
+
+**Specialisation via the type system.** Julia's compiler generates specialised native code for each concrete type at dispatch time, eliminating virtual dispatch overhead that typically burdens dynamic languages.
+
+---
 
 ### Blog
 
