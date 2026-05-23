@@ -91,7 +91,3 @@ There are zero external packages to install. `Random` and `Downloads` are part o
 **Specialisation via the type system.** Julia's compiler generates specialised native code for each concrete type at dispatch time, eliminating virtual dispatch overhead that typically burdens dynamic languages.
 
 ---
-
-### Blog
-
-For a deeper walkthrough of the math behind each operation, see the companion post: (WIP)
